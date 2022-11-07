@@ -124,6 +124,7 @@ namespace Newmoonhana.HADEngine
 
         void Setting_OrthographicSize()
         {
+            Camera.main.orthographicSize = Screen.width / 24f / 10;
             //Camera.main.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize = Screen.height / 200f;
         }
         public void Input_Setting_Screen(FullScreenMode isFullScreen)
