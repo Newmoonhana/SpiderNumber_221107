@@ -5,4 +5,7 @@ using UnityEngine;
 public class NumberNode : MonoBehaviour
 {
     [SerializeField] internal NumberNode_obj data;
+
+    [SerializeField] SpriteRenderer sr;
+    [SerializeField] SpriteRenderer bg_sr;
 }

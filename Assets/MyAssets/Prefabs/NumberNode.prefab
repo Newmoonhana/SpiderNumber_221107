@@ -48,6 +48,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: d610135f496806e48a66e3285933264f, type: 2}
+  sr: {fileID: 7832506876295342294}
+  bg_sr: {fileID: 7832506876316824884}
 --- !u!212 &7832506876295342294
 SpriteRenderer:
   m_ObjectHideFlags: 0

@@ -2,11 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Point : MonoBehaviour
+public class Point
 {
     uint width;
-    int position;
-    internal int Position => position;
+    internal int position;
     public int[] PositionArray
     {
         get
@@ -37,5 +36,15 @@ public class Point : MonoBehaviour
         int[] temp = { thisP.X - otherP.X, thisP.Y - otherP.Y };
         thisP.PositionArray = temp;
         return thisP;
+    }
+
+    static Point zero;
+    public static Point Zero
+    {
+        get
+        {
+            zero.position = 0;
+            return zero;
+        }
     }
 }
