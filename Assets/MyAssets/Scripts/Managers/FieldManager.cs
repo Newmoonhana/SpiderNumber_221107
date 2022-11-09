@@ -44,13 +44,14 @@ namespace Newmoonhana.HADEngine
 
         protected override void Awake()
         {
+            Init();
             base.Awake();
         }
 
         protected virtual void Start()
         {
             HADEventManager.AddListener(this);
-            Init();
+            
             SettingField();
         }
 
@@ -58,12 +59,13 @@ namespace Newmoonhana.HADEngine
         {
             //라인 세팅
             int temp_childCount = nodeLine_parent.childCount;
-            if (temp_childCount > 0)
-                for (i = temp_childCount - 1; i >= 0; i--)
-                    Destroy(nodeLine_parent.GetChild(i).gameObject);
             for (i = 0; i < width_max; i++)
             {
-                GameObject line_obj = Instantiate(line_pre, nodeLine_parent);
+                GameObject line_obj;
+                if (i < temp_childCount)
+                    line_obj = nodeLine_parent.GetChild(i).gameObject;
+                else
+                    line_obj = Instantiate(line_pre, nodeLine_parent);
                 line_obj.name = "NumberLine" + i;
                 line_lst.Add(line_obj.GetComponent<NumberLine>());
             }
@@ -77,32 +79,39 @@ namespace Newmoonhana.HADEngine
             {
                 if (i < width)
                 {
-                    Vector2 line_pos = Vector2.zero;
-                    // 넓이 계산
-                    wsize = width <= 4 ? 1.25f : 1000 / width * 0.005f; //width가 4 이하일 시 적용할 기본 사이즈 = 1.25f, 그 이상 시 비율로 계산
-
-                    //포지션 값 계산 및 오브젝트 생성
-                    line_pos.x = (-width * 0.5f + i + 0.5f) * wsize;
                     NumberLine line_tmp = line_lst[i];
-                    GameObject line_obj = line_tmp.gameObject;
-                    line_obj.SetActive(true);
-                    line_obj.transform.position = line_pos;
+                    LineSetting();
+                    NodeSetting();
 
-                    //크기 조정
-                    Vector2 temp_size = line_tmp.sr.size;
-                    temp_size.x = wsize;
-                    line_tmp.sr.size = temp_size;
-                    line_tmp.bg_sr.size = temp_size;
+                    void LineSetting()
+                    {
+                        Vector2 line_pos = Vector2.zero;
+                        // 넓이 계산
+                        wsize = width <= 4 ? 1.25f : 1000 / width * 0.005f; //width가 4 이하일 시 적용할 기본 사이즈 = 1.25f, 그 이상 시 비율로 계산
+                        hsize = 1.25f * 5;
+                        //포지션 값 계산 및 오브젝트 생성
+                        line_pos.x = (-width * 0.5f + i + 0.5f) * wsize;
+                        GameObject line_obj = line_tmp.gameObject;
+                        line_obj.SetActive(true);
+                        line_obj.transform.position = line_pos;
+
+                        //크기 조정
+                        Vector2 temp_size = line_tmp.sr.size;
+                        temp_size.x = wsize;
+                        line_tmp.sr.size = temp_size;
+                        line_tmp.bg_sr.size = temp_size;
+                    }
+
+                    void NodeSetting()
+                    {
+
+                    }
                 }
                 else
                 {
                     nodeLine_parent.GetChild(i).gameObject.SetActive(false);
                 }
-                Debug.Log("loop1= " + line_lst[i].name + "/" + line_lst[i].gameObject.activeSelf);
             }
-
-            for (i = 0; i < width_max; i++)
-                Debug.Log(line_lst[i].name + "/" + line_lst[i].gameObject.activeSelf);
         }
 
         public bool NodeMoving(Point prevpos)
