@@ -35,12 +35,13 @@ namespace Newmoonhana.HADEngine
         [SerializeField] GameObject node_pre;
 
         [Header("인게임 변수")]
-        [SerializeField] uint width, height;
-        uint width_min = 2, width_max = 10;
-        float wsize, hsize; //노드와 라인의 가로 길이, 노드의 세로 길이(라인의 세로 길이는 고정)
+        [SerializeField] uint row;
+        [SerializeField] uint column;
+        uint row_min = 2, row_max = 10, column_min = 2, column_max = 10;
+        float width, height; //노드와 라인의 가로 길이, 노드의 세로 길이(라인의 세로 길이는 고정)
         [SerializeField] List<NumberLine> line_lst = new List<NumberLine>();
         [SerializeField] List<NumberNode> node_lst = new List<NumberNode>();
-        int i;
+        int i, j;
 
         protected override void Awake()
         {
@@ -59,57 +60,97 @@ namespace Newmoonhana.HADEngine
         {
             //라인 세팅
             int temp_childCount = nodeLine_parent.childCount;
-            for (i = 0; i < width_max; i++)
+            for (i = 0; i < row_max; i++)
             {
+                //라인 생성 or 등록
                 GameObject line_obj;
                 if (i < temp_childCount)
                     line_obj = nodeLine_parent.GetChild(i).gameObject;
                 else
                     line_obj = Instantiate(line_pre, nodeLine_parent);
+                Transform line_tns = line_obj.transform;
                 line_obj.name = "NumberLine" + i;
                 line_lst.Add(line_obj.GetComponent<NumberLine>());
+
+                //노드 생성 or 등록
+                int temp_nodeChildCount = line_tns.GetChild(1).childCount;
+                for (j = 0; j < column_max; j++)
+                {
+                    GameObject node_obj;
+                    if (j < temp_nodeChildCount)
+                        node_obj = line_tns.GetChild(1).GetChild(j).gameObject;
+                    else
+                        node_obj = Instantiate(node_pre, line_tns.GetChild(1));
+                    node_obj.name = "NumberNode" + j;
+                    node_lst.Add(node_obj.GetComponent<NumberNode>());
+                }
             }
                 
         }
 
+        float size = 1.25f;
         void SettingField()
         {
+            // 넓이 계산
+            width = row <= 4 ? size : 1000 / row * 0.005f; //row가 4 이하일 시 적용할 기본 사이즈 = 1.25f, 그 이상 시 비율로 계산
+            height = (size * 5 - 0.25f) / column;
             //라인 세팅
-            for (i = 0; i < width_max; i++)
+            for (i = 0; i < row_max; i++)
             {
-                if (i < width)
+                NumberLine line_tmp = line_lst[i];
+                GameObject line_obj = line_tmp.gameObject;
+                if (i < row)
                 {
-                    NumberLine line_tmp = line_lst[i];
+                    Transform line_tns = line_obj.transform;
                     LineSetting();
                     NodeSetting();
 
                     void LineSetting()
                     {
-                        Vector2 line_pos = Vector2.zero;
-                        // 넓이 계산
-                        wsize = width <= 4 ? 1.25f : 1000 / width * 0.005f; //width가 4 이하일 시 적용할 기본 사이즈 = 1.25f, 그 이상 시 비율로 계산
-                        hsize = 1.25f * 5;
-                        //포지션 값 계산 및 오브젝트 생성
-                        line_pos.x = (-width * 0.5f + i + 0.5f) * wsize;
-                        GameObject line_obj = line_tmp.gameObject;
                         line_obj.SetActive(true);
-                        line_obj.transform.position = line_pos;
-
+                        //포지션 값 계산
+                        Vector2 line_pos = Vector2.zero;
+                        float linepos_cal = (-row * 0.5f + i + 0.5f) * width;
+                        line_pos.x = linepos_cal;
+                        line_tns.position = line_pos;
                         //크기 조정
                         Vector2 temp_size = line_tmp.sr.size;
-                        temp_size.x = wsize;
-                        line_tmp.sr.size = temp_size;
-                        line_tmp.bg_sr.size = temp_size;
+                        temp_size.x = width;
+                        line_tmp.ChangeSize(temp_size);
                     }
 
                     void NodeSetting()
                     {
-
+                        for (j = 0; j < column_max; j++)
+                        {
+                            NumberNode node_tmp = node_lst[i * (int)column_max + j];
+                            GameObject node_obj = node_tmp.gameObject;
+                            if (j < column)
+                            {
+                                node_obj.SetActive(true);
+                                Transform node_tns = node_tmp.transform;
+                                //포지션 값 계산
+                                Vector2 node_pos = Vector2.zero;
+                                float nodepos_cal = (-column * 0.5f + j + 0.5f) * height;
+                                node_pos.y = nodepos_cal;
+                                node_tns.localPosition = node_pos;
+                                //크기 조정
+                                Vector2 temp_size = line_tmp.sr.size;
+                                temp_size.x = width - 0.25f;
+                                temp_size.y = height;
+                                node_tmp.ChangeSize(temp_size);
+                            }
+                            else
+                            {
+                                node_obj.SetActive(false);
+                                Debug.Log(node_obj.name);
+                            }
+                        }
                     }
                 }
                 else
                 {
-                    nodeLine_parent.GetChild(i).gameObject.SetActive(false);
+                    line_obj.SetActive(false);
                 }
             }
         }

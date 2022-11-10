@@ -7,8 +7,9 @@ public class NumberLine : MonoBehaviour
     [SerializeField] internal SpriteRenderer sr;
     [SerializeField] internal SpriteRenderer bg_sr;
 
-    public void Init()
+    public void ChangeSize(Vector2 _size)
     {
-
+        sr.size = _size;
+        bg_sr.size = _size;
     }
 }

@@ -155,7 +155,9 @@ MonoBehaviour:
   nodeLine_parent: {fileID: 747745229}
   line_pre: {fileID: 568303434850709282, guid: 6ea3d88b4f9af0443af509c98497849b, type: 3}
   node_pre: {fileID: 7832506876295342293, guid: 0353c47e3cb8e864ab024f00cf701f62, type: 3}
-  width: 4
+  row: 4
+  column: 5
+  line_lst: []
   node_lst: []
 --- !u!4 &189997945
 Transform:
