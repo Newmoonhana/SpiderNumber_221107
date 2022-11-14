@@ -31,6 +31,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "drag",
+                    "type": "PassThrough",
+                    "id": "cc1c0880-63e6-4f6f-aa36-892e2eada6ac",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -66,6 +75,39 @@
                     "action": "position",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "Touch",
+                    "id": "1fe09895-9bfb-4072-9bc6-1fd159ac0c32",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "drag",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "binding",
+                    "id": "74e65dc1-eeb9-400a-bacf-aa91d08734a0",
+                    "path": "<Touchscreen>/primaryTouch/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "drag",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Binding",
+                    "id": "368de422-8c10-4444-9e4b-3253fa3b5215",
+                    "path": "<Touchscreen>/primaryTouch/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "drag",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }

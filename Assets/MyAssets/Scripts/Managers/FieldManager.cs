@@ -5,18 +5,18 @@ using UnityEngine;
 
 namespace Newmoonhana.HADEngine
 {
-    public struct HADFieldEvent
+    public struct HADNodeEvent
     {
         public string event_Name;
         public Point event_Position;
         public Point event_SubPosition;
-        public HADFieldEvent(string newName)
+        public HADNodeEvent(string newName)
         {
             event_Name = newName;
             event_Position = new Point();
             event_SubPosition = new Point();
         }
-        static HADFieldEvent e;
+        static HADNodeEvent e;
         public static void Trigger(string newName)
         {
             e.event_Name = newName;
@@ -24,10 +24,10 @@ namespace Newmoonhana.HADEngine
         }
     }
 
-    public class FieldManager : HADSingleton<FieldManager>, HADEventListener<HADFieldEvent>, IState
+    public class FieldManager : HADSingleton<FieldManager>, HADEventListener<HADNodeEvent>, IState
     {
-        HADFieldEvent nodeMoving_event = new HADFieldEvent("Node Moving");
-        HADFieldEvent nodeDroping_event = new HADFieldEvent("Node Droping");
+        HADNodeEvent nodeMoving_event;
+        HADNodeEvent nodeDroping_event;
 
         [Header("인게임 오브젝트")]
         [SerializeField] Transform nodeLine_parent;
@@ -39,17 +39,23 @@ namespace Newmoonhana.HADEngine
         [SerializeField] uint column;
         uint row_min = 2, row_max = 10, column_min = 2, column_max = 10;
         float width, height; //노드와 라인의 가로 길이, 노드의 세로 길이(라인의 세로 길이는 고정)
-        [SerializeField] List<NumberLine> line_lst = new List<NumberLine>();
-        [SerializeField] List<NumberNode> node_lst = new List<NumberNode>();
+        [SerializeField] List<NumberLine> line_lst;
+        [SerializeField] List<NumberNode> node_lst;
         int i, j;
 
         protected override void Awake()
         {
+            HADInputEventManager.Init();
+            nodeMoving_event = new HADNodeEvent("Node Moving");
+            nodeDroping_event = new HADNodeEvent("Node Droping");
+            line_lst = new List<NumberLine>();
+            node_lst = new List<NumberNode>();
+
             Init();
             base.Awake();
         }
 
-        protected virtual void Start()
+        void Start()
         {
             HADEventManager.AddListener(this);
             
@@ -86,6 +92,19 @@ namespace Newmoonhana.HADEngine
                 }
             }
                 
+        }
+
+        private void OnEnable()
+        {
+            HADInputEventManager.OnStartTouch += NodeTouchStarted;
+            HADInputEventManager.OnDragTouch += NodeDrag;
+            HADInputEventManager.Enable();
+        }
+        private void OnDisable()
+        {
+            HADInputEventManager.OnEndTouch -= NodeTouchStarted;
+            HADInputEventManager.OnEndTouch -= NodeDrag;
+            HADInputEventManager.Disable();
         }
 
         float size = 1.25f;
@@ -143,7 +162,6 @@ namespace Newmoonhana.HADEngine
                             else
                             {
                                 node_obj.SetActive(false);
-                                Debug.Log(node_obj.name);
                             }
                         }
                     }
@@ -153,6 +171,16 @@ namespace Newmoonhana.HADEngine
                     line_obj.SetActive(false);
                 }
             }
+        }
+
+        public void NodeTouchStarted(Vector2 _screen_pos, float time)
+        {
+            transform.position = HADInputEventManager.worldCoordinates;
+        }
+
+        public void NodeDrag(Vector2 _screen_pos, float time)
+        {
+            transform.position = HADInputEventManager.worldCoordinates;
         }
 
         public bool NodeMoving(Point prevpos)
@@ -182,7 +210,7 @@ namespace Newmoonhana.HADEngine
         /// HADGameEvent를 포착하여 대처
         /// </summary>
         /// <param name="eventType">HADGameEvent event.</param>
-        public void OnHADEvent(HADFieldEvent eventType)
+        public void OnHADEvent(HADNodeEvent eventType)
         {
             switch (eventType.event_Name)
             {

@@ -54,7 +54,7 @@ namespace Newmoonhana.HADEngine
     public class SoundManager : HADPersistentSingleton<SoundManager>, HADEventListener<HADGameEvent>
     {
         [Header("Setting")]
-        public SoundSettings setting = new SoundSettings();
+        public SoundSettings setting;
 
         [Header("Master")] [Range(0, 100)] public int masterVolume = 100;
         [Header("BGM")] [Range(0, 100)] public int bgmVolume = 100;
@@ -65,13 +65,16 @@ namespace Newmoonhana.HADEngine
         [Header("Audio Mixer")] [SerializeField] AudioMixer mixer;
 
         [SerializeField] AudioSource DefalutSfxSource;
-        HADGameEvent playsfx_event = new HADGameEvent("Play_SFX");
-        HADGameEvent setsoundsetting_event = new HADGameEvent("Setting_Sound");
+        HADGameEvent playsfx_event;
+        HADGameEvent setsoundsetting_event;
         AudioSource bgmSource, sfxSource;
         AudioClip clip;
 
         protected override void Awake()
         {
+            setting = new SoundSettings();
+            playsfx_event = new HADGameEvent("Play_SFX");
+            setsoundsetting_event = new HADGameEvent("Setting_Sound");
             base.Awake();
         }
 

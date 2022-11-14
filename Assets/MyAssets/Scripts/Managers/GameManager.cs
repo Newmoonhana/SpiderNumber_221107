@@ -88,13 +88,14 @@ namespace Newmoonhana.HADEngine
         const float inchToCm = 2.54f;   //인치->센치미터
         readonly float dragThresholdCM = 0.5f;  //터치한 시점으로부터 변수 값 정도는 밀려도 눌린 상태 유지
 
-        HADGameEvent pause_event = new HADGameEvent("Input_Pause");
+        HADGameEvent pause_event;
 #if (UNITY_ANDROID || UNITY_IPHONE)
         bool isFrameDown = false;
 #endif
 
         protected override void Awake()
         {
+            pause_event = new HADGameEvent("Input_Pause");
             base.Awake();
         }
 
