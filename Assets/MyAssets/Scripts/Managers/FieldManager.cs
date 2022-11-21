@@ -154,7 +154,9 @@ namespace Newmoonhana.HADEngine
                                 Vector2 node_pos = Vector2.zero;
                                 float nodepos_cal = (-column * 0.5f + j + 0.5f) * height;
                                 node_pos.y = nodepos_cal;
-                                node_tns.localPosition = node_pos;
+                                node_tmp.position = node_pos;
+                                node_tns.localPosition = node_tmp.position;
+                                
                                 //크기 조정
                                 Vector2 temp_size = line_tmp.sr.size;
                                 temp_size.x = width - 0.25f;
@@ -200,6 +202,7 @@ namespace Newmoonhana.HADEngine
                 hit_node.transform.position = HADInputEventManager.worldCoordinates;
         }
 
+        int drop_line_id;
         public void NodeTouchEnded(Vector2 _screen_pos, float time)
         {
             if (hit_node != null)
@@ -212,10 +215,11 @@ namespace Newmoonhana.HADEngine
                         if (hitInfo[i].collider.gameObject.layer == LayerMask.NameToLayer("NumberLine"))
                         {
                             //선택한 라인 오브젝트 ID 값 가져오기
-                            int line_id = int.Parse((hitInfo[i].transform.parent.parent.name).Split("NumberLine")[1]);
+                            drop_line_id = int.Parse((hitInfo[i].transform.name).Split("NumberLine")[1]);
                             //선택한 라인에 삽입할 노드가 있는지 확인
-                            int line_lastnode_id = line_id * (int)column_max + (int)column - 1;
+                            int line_lastnode_id = drop_line_id * (int)column_max + (int)column - 1;
                             NumberNode lastnode = node_lst[line_lastnode_id];
+                            HADEventManager.TriggerEvent(nodeMoving_event);
                             break;
                         }
                 }
