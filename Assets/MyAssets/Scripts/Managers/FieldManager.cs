@@ -98,12 +98,14 @@ namespace Newmoonhana.HADEngine
         {
             HADInputEventManager.OnStartTouch += NodeTouchStarted;
             HADInputEventManager.OnDragTouch += NodeDrag;
+            HADInputEventManager.OnEndTouch += NodeTouchEnded;
             HADInputEventManager.Enable();
         }
         private void OnDisable()
         {
             HADInputEventManager.OnEndTouch -= NodeTouchStarted;
             HADInputEventManager.OnEndTouch -= NodeDrag;
+            HADInputEventManager.OnEndTouch -= NodeTouchEnded;
             HADInputEventManager.Disable();
         }
 
@@ -173,14 +175,53 @@ namespace Newmoonhana.HADEngine
             }
         }
 
+        NumberNode hit_node;
         public void NodeTouchStarted(Vector2 _screen_pos, float time)
         {
-            transform.position = HADInputEventManager.worldCoordinates;
+            RaycastHit2D []hitInfo = Physics2D.RaycastAll(HADInputEventManager.worldCoordinates, Vector2.zero);
+            for (i = 0; i < hitInfo.Length; i++)
+            {
+                if (hitInfo[i].transform != null)
+                    if (hitInfo[i].collider.gameObject.layer == LayerMask.NameToLayer("NumberNode"))
+                    {
+                        //선택한 노드 오브젝트 ID 값 가져오기(비활성 오브젝트도 node_lst에 들어가있으므로 column_max 값으로 line id를 곱해줌)
+                        int id = int.Parse((hitInfo[i].transform.parent.parent.name).Split("NumberLine")[1]) * (int)column_max
+                            + int.Parse((hitInfo[i].transform.name).Split("NumberNode")[1]);
+                        hit_node = node_lst[id];
+                        hit_node.TouchedDropEffect();
+                        break;
+                    }
+            }
         }
 
         public void NodeDrag(Vector2 _screen_pos, float time)
         {
-            transform.position = HADInputEventManager.worldCoordinates;
+            if (hit_node != null)
+                hit_node.transform.position = HADInputEventManager.worldCoordinates;
+        }
+
+        public void NodeTouchEnded(Vector2 _screen_pos, float time)
+        {
+            if (hit_node != null)
+            {
+                hit_node.UnTouchedDropEffect();
+                RaycastHit2D[] hitInfo = Physics2D.RaycastAll(HADInputEventManager.worldCoordinates, Vector2.zero);
+                for (i = 0; i < hitInfo.Length; i++)
+                {
+                    if (hitInfo[i].transform != null)
+                        if (hitInfo[i].collider.gameObject.layer == LayerMask.NameToLayer("NumberLine"))
+                        {
+                            //선택한 라인 오브젝트 ID 값 가져오기
+                            int line_id = int.Parse((hitInfo[i].transform.parent.parent.name).Split("NumberLine")[1]);
+                            //선택한 라인에 삽입할 노드가 있는지 확인
+                            int line_lastnode_id = line_id * (int)column_max + (int)column - 1;
+                            NumberNode lastnode = node_lst[line_lastnode_id];
+                            break;
+                        }
+                }
+
+                hit_node = null;
+            }
         }
 
         public bool NodeMoving(Point prevpos)

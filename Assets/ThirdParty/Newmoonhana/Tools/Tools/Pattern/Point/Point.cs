@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Point
 {
-    uint width;
+    int width;
     internal int position;
     public int[] PositionArray
     {
@@ -15,11 +15,11 @@ public class Point
         }
         set
         {
-            position = value[1] * (int)width + value[0];
+            position = value[1] * width + value[0];
         }
     }
-    public int X => position / (int)width;
-    public int Y => position % (int)width;
+    public int X => position / width;
+    public int Y => position % width;
 
     public Point() { }
     public Point(int[] xy) { PositionArray = xy; }

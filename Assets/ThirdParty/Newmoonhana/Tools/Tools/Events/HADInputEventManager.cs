@@ -31,31 +31,37 @@ namespace Newmoonhana.Tools
         public static void Enable()
         {
             touch_control.Enable();
-            OnStartTouch += CalPosition;
-            OnDragTouch += CalPosition;
         }
         public static void Disable()
         {
             touch_control.Disable();
-            OnEndTouch -= CalPosition;
         }
 
         static void StartTouch(InputAction.CallbackContext _ctx)
         {
             if (OnStartTouch != null)
+            {
+                CalPosition(touch_control.Touch.position.ReadValue<Vector2>(), (float)_ctx.startTime);
                 OnStartTouch(touch_control.Touch.position.ReadValue<Vector2>(), (float)_ctx.startTime);
+            }
             //Debug.Log("Touch started " + touch_control.Touch.position.ReadValue<Vector2>());
         }
         static void DragTouch(InputAction.CallbackContext _ctx)
         {
             if (OnDragTouch != null)
+            {
+                CalPosition(touch_control.Touch.position.ReadValue<Vector2>(), (float)_ctx.startTime);
                 OnDragTouch(touch_control.Touch.position.ReadValue<Vector2>(), (float)_ctx.startTime);
+            }
             //Debug.Log("Drag " + touch_control.Touch.position.ReadValue<Vector2>());
         }
         static void EndTouch(InputAction.CallbackContext _ctx)
         {
             if (OnEndTouch != null)
+            {
+                CalPosition(touch_control.Touch.position.ReadValue<Vector2>(), (float)_ctx.time);
                 OnEndTouch(touch_control.Touch.position.ReadValue<Vector2>(), (float)_ctx.time);
+            }
             //Debug.Log("Touch ended " + touch_control.Touch.position.ReadValue<Vector2>());
         }
 
